@@ -21,16 +21,23 @@ function updateTotalField(totalFieldId, amount) {
     const totalText = totalElement.innerText;
     const previousTotal = parseFloat(totalText);
     totalElement.innerText = previousTotal + amount;
-
 }
 
-function updateBalance (amount, isAdd) {
+function getCurrentBalance() {
     const balanceTotal = document.getElementById('balance-total');
     const balanceTotalText = balanceTotal.innerText;
     const previousBalanceTotal = parseFloat(balanceTotalText);
+    return previousBalanceTotal;
+}
+
+function updateBalance (amount, isAdd) {
+    const previousBalanceTotal = getCurrentBalance();
+     const balanceTotal = document.getElementById('balance-total');
+    // const balanceTotalText = balanceTotal.innerText;
+    // const previousBalanceTotal = parseFloat(balanceTotalText);
 
     if (isAdd == true) {
-        balanceTotal.innerText = previousBalanceTotal + depositAmount;
+        balanceTotal.innerText = previousBalanceTotal + amount;
     }
     else{
         balanceTotal.innerText = previousBalanceTotal - amount;
@@ -63,13 +70,11 @@ document.getElementById('deposit-button').addEventListener('click', function() {
     // balanceTotal.innerText = previousBalanceTotal + depositAmount;
 
     const depositAmount = getInputValue('deposit-input');
-    updateTotalField('deposit-total', depositAmount);
-    updateBalance(amount, true);
-    
-
-    // // clear input field 
-    // depositInput.value = '';
-})
+    if (depositAmount > 0) {
+        updateTotalField('deposit-total', depositAmount);
+        updateBalance(depositAmount, true);
+    }
+});
 
 
 // handle withdraw button event handler
@@ -98,12 +103,12 @@ document.getElementById('withdraw-button').addEventListener('click',function () 
     // balanceTotal.innerText = previousBalanceTotal - withdrawAmount;
 
     const withdrawAmount = getInputValue('withdraw-input')
-    updateTotalField('withdraw-total', withdrawAmount);
-    updateBalance(amount, false);
-
-
-
-    // // clear withdraw input field 
-    // withdrawInput.value = '';
-
+    const currentBalance = getCurrentBalance();
+    if(withdrawAmount > 0 && withdrawAmount < currentBalance) {
+        updateTotalField('withdraw-total', withdrawAmount);
+    updateBalance(withdrawAmount, false);
+    }
+    if(withdrawAmount > currentBalance) {
+        console.log('You can not withdraw more than what you have');
+    }
 });
